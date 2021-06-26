@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .centered {
+   /* or absolute */
+  top: 50%;
+  left: 50%;
+}
+</style>
+
+    <div id="app" class="container mt-5 pt-5 bg-light w-50 centered">
+        <div class="container">
+            <form @submit.prevent="handleSubmit()">
+                <div v-for="(question,index) in questions" :key="question.id" class="mt-5">
+                    <p>[[index + 1]]. [[question.question]]</p>
+                    <div v-for="(option , i) in question.options">
+                        <input :id="'radio-'+question.id" @change="check(index , i , question.id)" type="radio"
+                            :value="option" :name="'option-'+question.id">
+                        [[option]]
+                    </div>
+                    <p :id="'show_message-'+question.id"></p>
+                </div>
+    
+                <button class="btn btn-primary" type="submit">Submit</button>
+    
+                <p class="mt-3"><br></p>
+            </form>
+    
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+<script>
+    var counter=600;
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            course_id: '{{id}}',
+            questions: [],
+            solutions: []
+        },
+        methods: {
+            greet: function (name) {
+                console.log('Hello from ' + name + '!')
+            },
+            check(question_index, option_index, id) {
+                var question = this.questions[question_index]
+                var element = document.getElementById(`show_message-${id}`)
+
+                var radios = document.querySelectorAll(`#radio-${id}`)
+                for (var i = 0; i < radios.length; i++) {
+                    radios[i].disabled = true
+                }
+
+                var solution = {
+                    'question_id': id,
+                    'option': option_index + 1
+                }
+                this.solutions.push(solution)
+            },
+            handleSubmit() {
+        
+                fetch('/api/check_score', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                       data : JSON.stringify(this.solutions),
+                       course_id : this.course_id
+                    })
+                })
+            .then(res => res.json())
+            .then(result => {
+                console.log(result)
+                window.location = '/view_score'
+            })
+
+        }
+    },
+    mounted() {
+
+        fetch(`/api/${this.course_id }`)
+            .then(res => res.json())
+            .then(result => {
+                this.questions = result
+
+            })
+
+    }
+    });
+</script>
+<div class="container fixed-top" style="text-align:right;color:#ffffff;">
+    <h1 id="time" style="text-align:right">Timer</h1>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        function convert(s){
+            var min=Math.floor(s/60);
+            var sec=s%60;
+            return ("0"+min).slice(-2)+ ":"+("0"+sec).slice(-2);
+        }
+        var interval = setInterval(timer,1000);
+        var counter=0;
+        var timeleft=10*60;
+        var time=$("#time");
+        time.html(convert(timeleft-counter));
+        function timer(){
+            counter++;
+            time.html(convert(timeleft-counter));
+            if(counter==timeleft){
+                clearInterval(interval);
+                alert("Time Up");
+                window.location="http://127.0.0.1:8000/";
+                handleSubmit();
+            }
+        }
+
+    })
+</script>
+
+{% endblock %}

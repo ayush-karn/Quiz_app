@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=60cfa6b6bfdf8e00190a2063&product=sticky-share-buttons" async="async"></script>
+
+
+<div class="container mt-5">
+  <div class="sharethis-sticky-share-buttons"></div>
+<ul class="list-group">
+    <li class="list-group-item active">Your score</li>
+    {% for s in score %}
+    <li class="list-group-item ">{{s.score}} - {{s.course.course_name}}</li>
+
+    {% endfor %}
+    {% if score %}
+    {% else %}
+    <p class="text-center mt-5">You haven't given any exam yet.</p>
+    <div class="text-center">
+      <a class="btn btn-dark w-25" style="text-align:center;" href="/">Give Exam</a>
+    </div>
+    
+    {% endif %}
+  </ul>
+  
+
+</div>
+
+
+
+{% endblock %}

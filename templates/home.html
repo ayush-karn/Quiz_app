@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+    <div class="container mt-5 pt-5 w-50 bg-light" >
+        <h3 class="text-center ">Select a Topic</p>
+            <p class="mt-3"><br></p>
+        <div class="row">
+            {% for course in courses %}
+            <div class="col-lg-3">
+                <a href="/{{course.id}}" class="btn btn-primary">{{course.course_name}}</a>
+                <p class="mt-3"><br></p>
+                        </div>
+
+            {% endfor %}
+        </div>
+        <p class="mt-3"><br></p>
+    </div>
+
+
+   {% endblock %}
